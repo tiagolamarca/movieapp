@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmes Favoritos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .search-container button {
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .search-container button:hover {
+            background-color: #218838;
+        }
+        .logout-button {
+            padding: 10px;
+            background-color: #dc3545; /* Vermelho */
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+        .movie-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .movie-item {
+            margin: 10px;
+            text-align: center;
+        }
+        .movie-item img {
+            width: 150px;
+            height: auto;
+            cursor: pointer;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Seus Filmes Favoritos</h1>
+    
+    <!-- Exibir mensagens -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ 'alert-warning' if 'warning' in message else 'alert-success' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="search-container">
+        <form method="POST" action="/movies">
+            <input type="text" name="search_query" placeholder="Buscar filmes" required>
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+    <a href="/logout" class="logout-button">Sair</a>
+    <div class="movie-list">
+        {% for movie in movies %}
+            <div class="movie-item">
+                <a href="{{ url_for('movie_details', movie_id=movie[0]) }}">
+                    <img src="https://image.tmdb.org/t/p/w500{{ movie[2] }}" alt="{{ movie[1] }}">
+                </a>
+                <h3>{{ movie[1] }}</h3>
+                <p>Status: {{ movie[3] }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>
+

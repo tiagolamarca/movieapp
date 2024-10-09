@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Filme</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .movie-details {
+            text-align: center;
+        }
+        .movie-details img {
+            width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            padding: 10px;
+            background-color: #007bff; /* Azul */
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="movie-details">
+        <h1>{{ movie.title }}</h1>
+        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+        <p><strong>Diretor:</strong> {{ movie.director }}</p>
+        <p><strong>Sinopse:</strong> {{ movie.overview }}</p>
+        <p><strong>Duração:</strong> {{ movie.runtime }} minutos</p>
+        <p><strong>Ano de Lançamento:</strong> {{ movie.release_date }}</p>
+    </div>
+    <a href="{{ url_for('user_movies') }}" class="back-button">Voltar</a>
+</div>
+
+</body>
+</html>
+

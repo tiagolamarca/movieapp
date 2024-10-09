@@ -1,0 +1,16 @@
+<h1>Resultados da Busca</h1>
+<form method="POST" action="/add_movie">
+    {% for movie in movies %}
+    <div>
+        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+        <p>{{ movie.title }}</p>
+        <input type="hidden" name="movie_title" value="{{ movie.title }}">
+        <select name="status">
+            <option value="watched">Assistido</option>
+            <option value="favorite">Favorito</option>
+            <option value="watchlist">Pretendo Assistir</option>
+        </select>
+        <button type="submit">Adicionar à lista</button>
+    </div>
+    {% endfor %}
+</form>

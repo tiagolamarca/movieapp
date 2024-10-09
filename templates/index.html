@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App de Registro e Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px; /* Tamanho da fonte para o título */
+            font-weight: bold; /* Negrito */
+            margin-bottom: 10px; /* Espaço abaixo do título */
+            color: red; /* Cor do título em vermelho */
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>FILMES FAVORITOS</h1> <!-- Primeira linha do título -->
+    <h1>THE MOVIE DB</h1> <!-- Segunda linha do título -->
+
+    <h2>Registro</h2>
+    <form method="POST" action="/register">
+        <div class="form-group">
+            <input type="text" name="username" placeholder="Usuário" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" placeholder="Senha" required>
+        </div>
+        <button type="submit" class="btn">Registrar</button>
+    </form>
+
+    <h2>Login</h2>
+    <form method="POST" action="/login">
+        <div class="form-group">
+            <input type="text" name="username" placeholder="Usuário" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" placeholder="Senha" required>
+        </div>
+        <button type="submit" class="btn">Entrar</button>
+    </form>
+
+    <!-- Mensagens de flash -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    {% if message == "Você saiu com sucesso!" %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</div>
+
+</body>
+</html>
+
