@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
 import requests
+from werkzeug.security import generate_password_hash, check_password_hash
 from database import get_connection
 
 app = Flask(__name__)
@@ -10,7 +11,6 @@ TMDB_API_KEY = 'd2b99c782375e6400be06c7a3f0650d6'
 
 @app.route('/')
 def index():
-    # Passando as mensagens de flash para o template
     return render_template('index.html', messages=session.get('_flashes', []))
 
 @app.route('/register', methods=['POST'])
@@ -29,13 +29,16 @@ def register():
                 flash("Usuário já existe!", "error")
                 return redirect(url_for('index'))
 
+            # Hash da senha antes de armazenar
+            hashed_password = generate_password_hash(password)
+
             # Insere o novo usuário
             sql = "INSERT INTO users (username, password) VALUES (%s, %s)"
-            cursor.execute(sql, (username, password))
+            cursor.execute(sql, (username, hashed_password))
         connection.commit()
         flash("Usuário registrado com sucesso!", "success")
     except Exception as e:
-        print(e)
+        print("Erro ao registrar usuário:", e)
         flash("Falha no registro!", "error")
     finally:
         connection.close()
@@ -51,18 +54,17 @@ def login():
     connection = get_connection()
     try:
         with connection.cursor() as cursor:
-            sql = "SELECT * FROM users WHERE username = %s AND password = %s"
-            cursor.execute(sql, (username, password))
+            sql = "SELECT * FROM users WHERE username = %s"
+            cursor.execute(sql, (username,))
             user = cursor.fetchone()
 
-            if user:
+            if user and check_password_hash(user[2], password):  # Verifica a senha com hash
                 session['user_id'] = user[0]  # Armazena o ID do usuário na sessão
-                flash("Login realizado com sucesso!", "success")  # Mensagem de sucesso
-                return redirect(url_for('user_movies'))  # Redirecionar para a lista de filmes
+                return redirect(url_for('user_movies'))
             else:
                 flash("Usuário ou senha inválidos!", "error")
     except Exception as e:
-        print(e)
+        print("Erro ao realizar login:", e)
         flash("Falha ao realizar login!", "error")
     finally:
         connection.close()
@@ -79,7 +81,6 @@ def movies():
         response = requests.get(f'https://api.themoviedb.org/3/search/movie?api_key={TMDB_API_KEY}&query={search_query}')
         results = response.json().get('results', [])
 
-        # Adiciona filmes à tabela 'movies' se não existirem
         connection = get_connection()
         try:
             with connection.cursor() as cursor:
@@ -119,12 +120,9 @@ def mark_movie():
     movie_id = request.form.get('movie_id')
     status = request.form.get('status')
 
-    print(f"User ID: {user_id}, Movie ID: {movie_id}, Status: {status}")  # Depuração
-
     connection = get_connection()
     try:
         with connection.cursor() as cursor:
-            # Verifica se o filme existe na tabela 'movies'
             cursor.execute("SELECT * FROM movies WHERE id = %s", (movie_id,))
             movie_exists = cursor.fetchone()
 
@@ -132,7 +130,6 @@ def mark_movie():
                 flash("Filme não encontrado na lista!", "error")
                 return redirect(url_for('user_movies'))
 
-            # Verifica se o filme já foi marcado pelo usuário com o mesmo status
             check_sql = "SELECT * FROM user_movies WHERE user_id = %s AND movie_id = %s AND status = %s"
             cursor.execute(check_sql, (user_id, movie_id, status))
             existing_entry = cursor.fetchone()
@@ -141,7 +138,6 @@ def mark_movie():
                 flash("Você já marcou este filme como " + status.upper() + "!", "warning")
                 return redirect(url_for('user_movies'))
 
-            # Se o filme não foi marcado, insere a nova entrada
             sql = "INSERT INTO user_movies (user_id, movie_id, status) VALUES (%s, %s, %s)"
             cursor.execute(sql, (user_id, movie_id, status))
         connection.commit()
@@ -162,7 +158,7 @@ def user_movies():
     user_id = session['user_id']
     connection = get_connection()
     movies = []
-    
+
     try:
         with connection.cursor() as cursor:
             sql = """
@@ -176,7 +172,7 @@ def user_movies():
     except Exception as e:
         print("Erro ao recuperar filmes:", e)
 
-    return render_template('user_movies.html', movies=movies)
+    return render_template('user_movies.html', movies=movies, messages=session.get('_flashes', []))
 
 @app.route('/logout')
 def logout():
@@ -186,4 +182,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
-
