@@ -63,6 +63,14 @@
             margin-bottom: 20px;
             border-radius: 5px;
         }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -76,9 +84,7 @@
         {% if messages %}
             <ul>
                 {% for category, message in messages %}
-                    {% if message == "Você saiu com sucesso!" or message == "Usuário inexistente!" or message == "Usuário já existe!" or message == "Usuário ou senha inválidos!" %}
-                        <li class="alert alert-{{ category }}">{{ message }}</li>
-                    {% endif %}
+                    <li class="alert alert-{{ category }}">{{ message }}</li>
                 {% endfor %}
             </ul>
         {% endif %}

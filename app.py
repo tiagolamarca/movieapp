@@ -123,6 +123,7 @@ def mark_movie():
     connection = get_connection()
     try:
         with connection.cursor() as cursor:
+            # Verifica se o filme já existe
             cursor.execute("SELECT * FROM movies WHERE id = %s", (movie_id,))
             movie_exists = cursor.fetchone()
 
@@ -130,16 +131,19 @@ def mark_movie():
                 flash("Filme não encontrado na lista!", "error")
                 return redirect(url_for('user_movies'))
 
-            check_sql = "SELECT * FROM user_movies WHERE user_id = %s AND movie_id = %s AND status = %s"
-            cursor.execute(check_sql, (user_id, movie_id, status))
-            existing_entry = cursor.fetchone()
+            # Verifica se o filme já está marcado com o mesmo status
+            cursor.execute("SELECT * FROM user_movies WHERE user_id = %s AND movie_id = %s AND status = %s",
+                           (user_id, movie_id, status))
+            already_marked = cursor.fetchone()
 
-            if existing_entry:
-                flash("Você já marcou este filme como " + status.upper() + "!", "warning")
+            if already_marked:
+                flash("Você já marcou este filme como " + status + "!", "warning")
                 return redirect(url_for('user_movies'))
 
+            # Insira o registro
             sql = "INSERT INTO user_movies (user_id, movie_id, status) VALUES (%s, %s, %s)"
             cursor.execute(sql, (user_id, movie_id, status))
+
         connection.commit()
         flash("Filme marcado como " + status + " com sucesso!", "success")
     except Exception as e:
@@ -182,3 +186,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
+
