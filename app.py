@@ -10,7 +10,8 @@ TMDB_API_KEY = 'd2b99c782375e6400be06c7a3f0650d6'
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Passando as mensagens de flash para o template
+    return render_template('index.html', messages=session.get('_flashes', []))
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -21,6 +22,14 @@ def register():
     connection = get_connection()
     try:
         with connection.cursor() as cursor:
+            # Verifica se o usuário já existe
+            cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+            existing_user = cursor.fetchone()
+            if existing_user:
+                flash("Usuário já existe!", "error")
+                return redirect(url_for('index'))
+
+            # Insere o novo usuário
             sql = "INSERT INTO users (username, password) VALUES (%s, %s)"
             cursor.execute(sql, (username, password))
         connection.commit()
@@ -48,6 +57,7 @@ def login():
 
             if user:
                 session['user_id'] = user[0]  # Armazena o ID do usuário na sessão
+                flash("Login realizado com sucesso!", "success")  # Mensagem de sucesso
                 return redirect(url_for('user_movies'))  # Redirecionar para a lista de filmes
             else:
                 flash("Usuário ou senha inválidos!", "error")
@@ -128,7 +138,7 @@ def mark_movie():
             existing_entry = cursor.fetchone()
 
             if existing_entry:
-                session['warning_message'] = f"Você já marcou este filme como {status.upper()}!"
+                flash("Você já marcou este filme como " + status.upper() + "!", "warning")
                 return redirect(url_for('user_movies'))
 
             # Se o filme não foi marcado, insere a nova entrada
@@ -152,14 +162,7 @@ def user_movies():
     user_id = session['user_id']
     connection = get_connection()
     movies = []
-    messages = []
-
-    # Captura as mensagens de sucesso e aviso
-    if 'success_message' in session:
-        messages.append(session.pop('success_message'))  # Exibir e remover a mensagem de sucesso
-    if 'warning_message' in session:
-        messages.append(session.pop('warning_message'))  # Exibir e remover a mensagem de aviso
-
+    
     try:
         with connection.cursor() as cursor:
             sql = """
@@ -173,7 +176,7 @@ def user_movies():
     except Exception as e:
         print("Erro ao recuperar filmes:", e)
 
-    return render_template('user_movies.html', movies=movies, messages=messages)
+    return render_template('user_movies.html', movies=movies)
 
 @app.route('/logout')
 def logout():

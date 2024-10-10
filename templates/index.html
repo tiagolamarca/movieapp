@@ -23,10 +23,10 @@
         }
         h1 {
             text-align: center;
-            font-size: 24px; /* Tamanho da fonte para o título */
-            font-weight: bold; /* Negrito */
-            margin-bottom: 10px; /* Espaço abaixo do título */
-            color: red; /* Cor do título em vermelho */
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: red;
         }
         h2 {
             text-align: center;
@@ -68,8 +68,21 @@
 <body>
 
 <div class="container">
-    <h1>FILMES FAVORITOS</h1> <!-- Primeira linha do título -->
-    <h1>THE MOVIE DB</h1> <!-- Segunda linha do título -->
+    <h1>FILMES FAVORITOS</h1>
+    <h1>THE MOVIE DB</h1>
+
+    <!-- Mensagens de flash -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    {% if message == "Você saiu com sucesso!" or message == "Usuário inexistente!" or message == "Usuário já existe!" or message == "Usuário ou senha inválidos!" %}
+                        <li class="alert alert-{{ category }}">{{ message }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
 
     <h2>Registro</h2>
     <form method="POST" action="/register">
@@ -92,19 +105,6 @@
         </div>
         <button type="submit" class="btn">Entrar</button>
     </form>
-
-    <!-- Mensagens de flash -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            <ul>
-                {% for category, message in messages %}
-                    {% if message == "Você saiu com sucesso!" %}
-                        <li class="{{ category }}">{{ message }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
 </div>
 
 </body>
