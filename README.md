@@ -32,8 +32,8 @@ Este projeto tem como objetivo desenvolver uma aplicação web onde o usuário p
 
 Clone o repositório e execute a aplicação:
    ```bash
-   git clone https://github.com/tiagolamarca/moviesapp.git
-   cd moviesapp
+   git clone https://github.com/tiagolamarca/movieapp.git
+   cd movieapp
    sudo docker-compose up --build
 
 ## Como Acessar a Aplicação
