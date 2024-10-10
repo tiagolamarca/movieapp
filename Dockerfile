@@ -1,19 +1,28 @@
-# Usar uma imagem base do Python
+# Usando a imagem oficial do Python
 FROM python:3.10-slim
 
-# Definir o diretório de trabalho
+# Definindo o diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos de requisitos e instalar dependências
+# Instalar pacotes necessários para compilar o mysqlclient
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev build-essential pkg-config
+
+# Copiando o arquivo de requisitos para o diretório de trabalho
 COPY requirements.txt .
+
+# Instalando as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar o restante do código da aplicação
+# Copiando o código da aplicação
 COPY . .
 
-# Expor a porta que a aplicação Flask usa
+# Definindo a variável de ambiente FLASK_APP
+ENV FLASK_APP=app.py
+
+# Expondo a porta que a aplicação vai rodar
 EXPOSE 5000
 
-# Comando para iniciar a aplicação
-CMD ["python", "app.py"]
+# Comando para rodar a aplicação
+CMD ["flask", "run", "--host=0.0.0.0"]
 

@@ -1,0 +1,29 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"  # A porta do host mapeada para a porta do container
+    environment:
+      - MYSQL_HOST=db  # Use o nome do serviço do Docker
+      - MYSQL_USER=tiago
+      - MYSQL_PASSWORD=Jimi2022
+      - MYSQL_DB=movie
+    depends_on:
+      - db
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Cps%402024
+      MYSQL_DATABASE: movie
+      MYSQL_USER: tiago
+      MYSQL_PASSWORD: Jimi2022
+    ports:
+      - "3200:3306"  # Expondo a porta padrão do MySQL
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+
