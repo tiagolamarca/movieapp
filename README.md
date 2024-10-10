@@ -34,7 +34,7 @@ Clone o repositório e execute a aplicação:
    ```bash
    git clone https://github.com/tiagolamarca/movieapp.git
    cd movieapp
-   sudo docker-compose up --build
+   docker-compose up --build
 
 ## Como Acessar a Aplicação
 
